@@ -1,0 +1,330 @@
+<!--<ul *ngFor="let item of items | async">
+  <li>{{item.name}}</li>
+</ul>
+<ul>
+  <li *ngFor="let poke of pokemon | async">
+    {{poke.name}}
+  </li>
+</ul>-->
+
+<!--<ul>
+  <li *ngFor="let businessRes of busiRes ">
+    {{businessRes.category}}
+  </li>
+</ul>
+<ul>
+  <li *ngFor="let categoriesRes of cateRes">
+    {{categoriesRes.name}}
+  </li>
+</ul>-->
+
+<div class="top-bar">
+  <div class="row">
+    <div class="top-bar-left">
+      <ul class="menu">
+        <li class="menu-text">BusinessContacts</li>
+      </ul>
+    </div>
+    <div class="top-bar-right">
+
+    </div>
+  </div>
+</div>
+<br>
+
+
+<div class="row">
+  <div class="large-6 columns">
+    <button class="button" (click)="changeState('add')">Add Business</button>
+  </div>
+  <div class="large-6 columns">
+    <label>
+      Filter category
+      <select (change)="filterCategory(filteredCategory.value)" #filteredCategory>
+        <option value="0">Select</option>
+        <option *ngFor="let category of cateRes" value="{{category.name}}">{{category.name}}</option>
+      </select>
+    </label>
+  </div>
+</div>
+
+
+<!--in this part it helps to show/hide the extra content of the contacts, 
+when the user selects the contact it appears a new window to show the 
+information of the contact-->
+
+<div *ngIf="appState == 'extend'">
+  <div class="row">
+    <div class="large-12 columns">
+      <button class="button alert" (click)="changeState('default')">Go Back</button>
+    </div>
+  </div>
+
+  <!--se muestra todo el contenido del contacto desde firebase el resto de la información-->
+  <div *ngFor="let busine of busiRes">
+    <div *ngIf="busine.$key == activeKey">
+      <div class="row">
+        <div class="large-5 columns large-offset-1">
+          <h3>
+            {{busine.company}}
+          </h3>
+          <p>
+            Category: {{busine.category}}
+          </p>
+          <p>
+            Years in Business: {{busine.years_in_business}}
+          </p>
+          <p>
+            {{busine.description}}
+          </p>
+        </div>
+        <div class="large-5 columns large-offset-1">
+          <h3>
+            Contact Info
+          </h3>
+          <p>
+            Phone: {{busine.category}}
+          </p>
+          <p>
+            Email: {{busine.email}}
+          </p>
+          <p>
+            Street Address: {{busine.street_address}}
+          </p>
+          <p>
+            City: {{busine.city}}
+          </p>
+          <p>
+            State: {{busine.state}}
+          </p>
+          <p>
+            ZipCode: {{busine.zpicode}}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- para poder crear un formulario para crear nuevo contacto -->
+<div *ngIf="appState == 'add'">
+  <div class="large-12 columns">
+    <h3>
+      Add Business
+    </h3>
+    <form (submit)="addBusiness(
+        company.value,
+        category.value,
+        years_in_business.value,
+        description.value,
+        phone.value,
+        email.value,
+        street_address.value,
+        state.value,
+        zpicode.value
+      )">
+      <div class="row">
+        <div class="large-6 columns">
+          <label> Company
+            <input type="text" placeholder="Company Name" #company>
+          </label>
+        </div>
+        <div class="large-6 columns">
+          <label>
+            Category
+            <select #category>
+              <option value="0">Select</option>
+              <option *ngFor="let category of cateRes" value="{{category.name}}">{{category.name}}</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <!---->
+      <div class="row">
+        <div class="large-6 columns">
+          <label> Years in Business
+            <input type="text" placeholder="Years in Business" #years_in_business>
+          </label>
+        </div>
+        <div class="large-6 columns">
+          <label>
+            <textarea #description></textarea>
+          </label>
+        </div>
+      </div>
+      <!---->
+      <div class="row">
+        <div class="large-6 columns">
+          <label> Phone
+            <input type="text" placeholder="Phone" #phone>
+          </label>
+        </div>
+        <div class="large-6 columns">
+          <label>
+            Email
+            <input type="text" placeholder="Email" #email>
+          </label>
+        </div>
+      </div>
+      <!---->
+      <div class="row">
+        <div class="large-6 columns">
+          <label> Street Address
+            <input type="text" placeholder="Street Address" #street_address>
+          </label>
+        </div>
+        <div class="large-6 columns">
+          <label>
+            State
+            <input type="text" placeholder="State" #state>
+          </label>
+        </div>
+      </div>
+      <!---->
+      <div class="row">
+        <div class="large-6 columns">
+          <label> Street Address
+            <input type="text" placeholder="Zip Code" #zpicode>
+          </label>
+        </div>
+      </div>
+      </form>
+  </div>
+  <div class="row">
+    <div class="large-12 columns">
+      <input type="submit" class="button" value="Submit" (click)="addBusiness(
+        company.value,
+        category.value,
+        years_in_business.value,
+        description.value,
+        phone.value,
+        email.value,
+        street_address.value,
+        state.value,
+        zpicode.value
+      )">
+      <!--<button class="button alert" (click)="changeState('default')">Go Back</button>-->
+    </div>
+  </div>
+</div>
+
+
+<!--para poder modificar el contacto existente-->
+<div *ngIf="appState == 'edit'">
+  <div class="large-12 columns">
+    <h3>
+      Edit Business
+    </h3>
+    <form (submit)="UpdateBusiness()">
+      <div class="row">
+        <div class="large-6 columns">
+          <label> Company
+            <input type="text" placeholder="Company Name" #company [(ngModel)]="activeCompany" name="activeCompany">
+          </label>
+        </div>
+        <div class="large-6 columns">
+          <label>
+            Category
+            <select #category [(ngModel)]="activeCategory" name="activeCategory">
+              <option value="0">Select</option>
+              <option *ngFor="let category of cateRes" value="{{category.name}}">{{category.name}}</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <!---->
+      <div class="row">
+        <div class="large-6 columns">
+          <label> Years in Business
+            <input type="text" placeholder="Years in Business" #years_in_business [(ngModel)]="activeYearsinBusiness" name="activeYearsinBusiness">
+          </label>
+        </div>
+        <div class="large-6 columns">
+          <label>
+            <textarea #description [(ngModel)]="activeDescription" name="activeDescription"></textarea>
+          </label>
+        </div>
+      </div>
+      <!---->
+      <div class="row">
+        <div class="large-6 columns">
+          <label> Phone
+            <input type="text" placeholder="Phone" #phone [(ngModel)]="activePhone" name="activePhone">
+          </label>
+        </div>
+        <div class="large-6 columns">
+          <label>
+            Email
+            <input type="text" placeholder="Email" #email [(ngModel)]="activeEmail" name="activeEmail">
+          </label>
+        </div>
+      </div>
+      <!---->
+      <div class="row">
+        <div class="large-6 columns">
+          <label> Street Address
+            <input type="text" placeholder="Street Address" #street_address [(ngModel)]="activeStreetAddress" name="activeStreetAddress">
+          </label>
+        </div>
+        <div class="large-6 columns">
+          <label>
+            State
+            <input type="text" placeholder="State" #state [(ngModel)]="activeState" name="activeState">
+          </label>
+        </div>
+      </div>
+      <!---->
+      <div class="row">
+        <div class="large-6 columns">
+          <label> Street Address
+            <input type="text" placeholder="Zip Code" #zpicode [(ngModel)]="activeZipcode" name="activeZipcode">
+          </label>
+        </div>
+      </div>
+      </form>
+  </div>
+  <div class="row">
+    <div class="large-12 columns">
+      <input type="submit" class="button" value="Submit" (click)="UpdateBusiness()">
+      <button class="button alert" (click)="changeState('default')">Go Back</button>
+    </div>
+  </div>
+</div>
+
+
+<!--se muestra todo el contenido del contacto desde firebase solamente 3 columnas-->
+<div class="row">
+  <div class="large-12 columns">
+    <div *ngIf="busiRes">
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Category</th>
+            <th>Phone</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let busin of busiRes">
+            <td>
+              {{busin.company}}
+            </td>
+            <td>
+              {{busin.category}}
+            </td>
+            <td>
+              {{busin.phone}}
+            </td>
+            <td>
+              <button class="button" (click)="changeState('extend', busin.$key)">More</button>
+              <button class="button secondary" (click)="showEdit(busin)">Edit</button>
+              <button class="button alert" (click)="deleteBusiness(busin.$key)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
